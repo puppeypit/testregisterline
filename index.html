@@ -1244,47 +1244,10 @@
                 }
             });
 
-            const tabAll = document.getElementById('tab-all');
-            if (tabAll) filterApps('all', tabAll);
+            filterAppsList('all');
         }
 
-        function filterApps(category, btnElement) {
-            const allTabs = document.querySelectorAll('.tab-btn');
-            allTabs.forEach(tab => {
-                tab.className = "tab-btn snap-start bg-white/60 backdrop-blur-sm text-slate-500 border border-white/60 px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap shadow-sm hover:bg-white/80 transition-all";
-            });
-            if (btnElement) {
-                btnElement.className = "tab-btn active snap-start bg-gradient-to-r from-pink-400 to-purple-400 text-white border border-transparent px-5 py-2 rounded-full text-xs font-bold whitespace-nowrap shadow-md transition-all";
-            }
-            searchDashApps();
-        }
 
-        function searchDashApps() {
-            const input = document.getElementById('dashAppSearch') ? document.getElementById('dashAppSearch').value.toLowerCase() : '';
-            const activeTab = document.querySelector('.tab-btn.active');
-            const category = activeTab ? activeTab.id.replace('tab-', '') : 'all';
-
-            const apps = document.querySelectorAll('.app-item');
-            let foundApp = false;
-            apps.forEach(app => {
-                const name = app.innerText.toLowerCase();
-                const isCatMatch = (category === 'all' || app.getAttribute('data-category') === category);
-                const isAuth = (app.getAttribute('data-auth') === 'true');
-
-                if (isCatMatch && isAuth && name.includes(input)) {
-                    app.style.display = 'flex';
-                    foundApp = true;
-                } else {
-                    app.style.display = 'none';
-                }
-            });
-
-            const noAppMsg = document.getElementById('noAppMsg');
-            if (noAppMsg) {
-                if (!foundApp) noAppMsg.classList.remove('hidden');
-                else noAppMsg.classList.add('hidden');
-            }
-        }
 
         function openApp(appKey) {
             const app = globalAppsList.find(a => a.id === appKey);
