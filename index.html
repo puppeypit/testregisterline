@@ -429,59 +429,42 @@
                             class="text-slate-700"></span></p>
                 </div>
 
-                <!-- Profile Form (Moved from Modal) -->
+                <!-- Profile Form -->
                 <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden mb-6">
                     <div class="px-5 py-4 border-b border-slate-100 bg-slate-50/50">
-                        <h4 class="font-bold text-slate-700 text-sm uppercase tracking-wider">แก้ไขข้อมูล</h4>
+                        <h4 class="font-bold text-slate-700 text-sm uppercase tracking-wider">แก้ไขข้อมูลส่วนตัว</h4>
                     </div>
                     <div class="p-5 space-y-4">
-                        <div>
-                            <label
-                                class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">ลิงก์รูปโปรไฟล์
-                                (URL)</label>
-                            <input type="text" id="prof_pic"
-                                class="w-full bg-[#F2F2F7] border border-transparent text-slate-800 rounded-xl px-4 py-3 text-[15px] focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all">
-                        </div>
                         <div class="grid grid-cols-2 gap-4">
                             <div>
-                                <label
-                                    class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">ชื่อจริง</label>
-                                <input type="text" id="prof_fname"
-                                    class="w-full bg-[#F2F2F7] border border-transparent text-slate-800 rounded-xl px-4 py-3 text-[15px] focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all">
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">ชื่อจริง</label>
+                                <input type="text" id="prof_fname" class="w-full bg-[#F2F2F7] border border-transparent text-slate-800 rounded-xl px-4 py-3 text-[15px] focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all">
                             </div>
                             <div>
-                                <label
-                                    class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">นามสกุล</label>
-                                <input type="text" id="prof_lname"
-                                    class="w-full bg-[#F2F2F7] border border-transparent text-slate-800 rounded-xl px-4 py-3 text-[15px] focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all">
+                                <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">นามสกุล</label>
+                                <input type="text" id="prof_lname" class="w-full bg-[#F2F2F7] border border-transparent text-slate-800 rounded-xl px-4 py-3 text-[15px] focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all">
                             </div>
                         </div>
                         <div>
-                            <label
-                                class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">เบอร์โทรศัพท์</label>
-                            <input type="text" id="prof_phone"
-                                class="w-full bg-[#F2F2F7] border border-transparent text-slate-800 rounded-xl px-4 py-3 text-[15px] focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all">
+                            <label class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">เบอร์โทรศัพท์</label>
+                            <input type="text" id="prof_phone" class="w-full bg-[#F2F2F7] border border-transparent text-slate-800 rounded-xl px-4 py-3 text-[15px] focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all">
                         </div>
-                        <div>
-                            <label
-                                class="block text-xs font-bold text-slate-400 uppercase tracking-wide mb-1.5">รหัสผ่านใหม่
-                                (เว้นว่างหากไม่ต้องการเปลี่ยน)</label>
-                            <div class="relative">
-                                <input type="password" id="prof_password"
-                                    class="w-full bg-[#F2F2F7] border border-transparent text-slate-800 rounded-xl pl-4 pr-12 py-3 text-[15px] focus:outline-none focus:bg-white focus:border-blue-500 focus:ring-4 focus:ring-blue-50 transition-all">
-                                <button type="button" onclick="toggleProfPassword()"
-                                    class="absolute inset-y-0 right-0 pr-4 flex items-center text-slate-400 hover:text-slate-600 focus:outline-none">
-                                    <i class="fa-solid fa-eye" id="prof_eye_icon"></i>
-                                </button>
-                            </div>
-                        </div>
-                        <button onclick="submitEditProfile()"
-                            class="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md shadow-blue-200 transition-all active:scale-95">บันทึกข้อมูล</button>
+                        <button onclick="submitEditProfile()" class="w-full mt-2 bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 rounded-xl shadow-md shadow-blue-200 transition-all active:scale-95">บันทึกข้อมูลส่วนตัว</button>
                     </div>
                 </div>
 
-                <button onclick="handleLogout()"
-                    class="w-full bg-white text-rose-500 font-bold py-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition-transform flex items-center justify-center gap-2">
+                <!-- Password Settings -->
+                <div class="bg-white rounded-3xl shadow-sm border border-slate-100 overflow-hidden mb-6 p-5">
+                    <button type="button" onclick="openChangePasswordModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold py-3.5 px-4 rounded-xl border border-slate-200 transition-all active:scale-95 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-key"></i> เปลี่ยนรหัสผ่านใหม่
+                    </button>
+                </div>
+
+                <button onclick="switchNavTab('apps')" class="w-full bg-white text-slate-600 font-bold py-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition-transform flex items-center justify-center gap-2 mb-3">
+                    <i class="fa-solid fa-arrow-left"></i> ย้อนกลับหน้าหลัก
+                </button>
+
+                <button onclick="handleLogout()" class="w-full bg-white text-rose-500 font-bold py-4 rounded-2xl shadow-sm border border-slate-100 active:scale-95 transition-transform flex items-center justify-center gap-2">
                     <i class="fa-solid fa-arrow-right-from-bracket"></i> ออกจากระบบ
                 </button>
             </div>
@@ -764,58 +747,31 @@
     </div>
 
     <!-- Edit Profile Modal -->
-    <div id="editProfileModal"
-        class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[60] flex justify-center items-center p-4">
+    <!-- Change Password Modal -->
+    <div id="changePasswordModal" class="hidden fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-[70] flex justify-center items-center p-4">
         <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl relative animate-fadeInUp">
-            <button onclick="closeEditProfileModal()"
-                class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full flex items-center justify-center">
+            <button type="button" onclick="closeChangePasswordModal()" class="absolute top-4 right-4 text-slate-400 hover:text-slate-600 transition-colors bg-slate-100 hover:bg-slate-200 w-8 h-8 rounded-full flex items-center justify-center">
                 <i class="fa-solid fa-times"></i>
             </button>
-            <div class="bg-gradient-to-r from-teal-500 to-emerald-400 px-6 py-5 text-white">
-                <h3 class="font-bold text-lg"><i class="fa-solid fa-user-edit mr-2"></i>แก้ไขโปรไฟล์</h3>
+            <div class="bg-gradient-to-r from-blue-500 to-indigo-500 px-6 py-5 text-white">
+                <h3 class="font-bold text-lg"><i class="fa-solid fa-key mr-2"></i>เปลี่ยนรหัสผ่าน</h3>
             </div>
-            <form id="editProfileForm" onsubmit="submitEditProfile(event)" class="p-6 space-y-4">
+            <form id="changePasswordForm" onsubmit="submitChangePassword(event)" class="p-6 space-y-4">
                 <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">ลิงก์รูปโปรไฟล์
-                        (URL)</label>
-                    <input type="text" id="profUrl" placeholder="https://..."
-                        class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal-500">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label
-                            class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">ชื่อจริง</label>
-                        <input type="text" id="profName" required
-                            class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal-500"
-                            oninput="this.value = this.value.replace(/[^ก-๛]/g, '')">
-                    </div>
-                    <div>
-                        <label
-                            class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">นามสกุล</label>
-                        <input type="text" id="profSurname" required
-                            class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal-500"
-                            oninput="this.value = this.value.replace(/[^ก-๛]/g, '')">
-                    </div>
-                </div>
-                <div>
-                    <label
-                        class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">เบอร์โทรศัพท์</label>
-                    <input type="tel" id="profPhone" required maxlength="10"
-                        class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-teal-500"
-                        oninput="this.value = this.value.replace(/[^0-9]/g, '')">
-                </div>
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">รหัสผ่าน</label>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">รหัสผ่านเดิม</label>
                     <div class="relative">
-                        <input type="password" id="profPassword" required
-                            class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl pl-4 pr-10 py-2.5 text-sm focus:outline-none focus:border-teal-500"
-                            oninput="this.value = this.value.replace(/[^\x21-\x7E]/g, '')">
-                        <i class="fa-solid fa-eye text-slate-400 absolute right-4 top-3 cursor-pointer hover:text-teal-500 transition-colors"
-                            id="toggleProfPasswordBtn" onclick="toggleProfPassword()"></i>
+                        <input type="password" id="oldPassword" required class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl pl-4 pr-10 py-2.5 text-sm focus:outline-none focus:border-blue-500">
+                        <i class="fa-solid fa-eye text-slate-400 absolute right-4 top-3 cursor-pointer hover:text-blue-500 transition-colors" id="toggleOldPasswordBtn" onclick="togglePassField('oldPassword', 'toggleOldPasswordBtn')"></i>
                     </div>
                 </div>
-                <button type="submit"
-                    class="w-full mt-2 bg-gradient-to-r from-teal-500 to-emerald-500 hover:from-teal-600 hover:to-emerald-600 text-white font-bold py-3 rounded-xl shadow-md transition-all">บันทึกข้อมูล</button>
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 uppercase tracking-wide mb-1">รหัสผ่านใหม่</label>
+                    <div class="relative">
+                        <input type="password" id="newPassword" required class="w-full bg-slate-50 border border-slate-200 text-slate-900 rounded-xl pl-4 pr-10 py-2.5 text-sm focus:outline-none focus:border-blue-500">
+                        <i class="fa-solid fa-eye text-slate-400 absolute right-4 top-3 cursor-pointer hover:text-blue-500 transition-colors" id="toggleNewPasswordBtn" onclick="togglePassField('newPassword', 'toggleNewPasswordBtn')"></i>
+                    </div>
+                </div>
+                <button type="submit" class="w-full mt-2 bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 text-white font-bold py-3 rounded-xl shadow-md transition-all">บันทึกรหัสผ่านใหม่</button>
             </form>
         </div>
     </div>
@@ -830,6 +786,7 @@
         // ==========================================
 
         let currentLineProfile = null;
+        let currentUserPassword = "";
 
         const targetUrls = {
             'calendar': 'https://doacoop-it.github.io/meeting_calendar/',
@@ -1084,7 +1041,7 @@
             document.getElementById('prof_lname').value = userData.lastName || '';
             let phoneStr = userData.phone ? String(userData.phone).replace(/'/g, "") : "";
             document.getElementById('prof_phone').value = phoneStr;
-            document.getElementById('prof_pic').value = userData.pictureUrl || '';
+            currentUserPassword = userData.password || '';
 
             // Set Header Date
             const today = new Date();
@@ -1907,26 +1864,71 @@
         // ==========================================
         // Edit Profile Logic
         // ==========================================
-        function openEditProfileModal() {
-            if (!currentLineProfile) return;
+        function submitEditProfile(e) {
+            if (e) e.preventDefault();
+            const profName = document.getElementById('prof_fname').value.trim();
+            const profSurname = document.getElementById('prof_lname').value.trim();
+            const profPhone = document.getElementById('prof_phone').value.trim();
+            // ใช้รูปเดิมที่มีใน currentLineProfile
+            const profUrl = currentLineProfile ? currentLineProfile.pictureUrl : '';
 
-            // Populate data from the current session state
-            document.getElementById('profName').value = document.getElementById('dashUserName').innerText.split(' ')[0] || '';
-            document.getElementById('profSurname').value = document.getElementById('dashUserName').innerText.split(' ')[1] || '';
-            document.getElementById('profPhone').value = document.getElementById('dashUserPhone').innerText.replace(/-/g, '') || '';
-            document.getElementById('profPassword').value = ''; // Leave password blank by default
-            document.getElementById('profUrl').value = currentLineProfile.pictureUrl || '';
+            if (!profName || !profSurname || !profPhone) {
+                return Swal.fire('ข้อมูลไม่ครบ', 'กรุณากรอกข้อมูลให้ครบถ้วนด้วยครับ', 'warning');
+            }
 
-            document.getElementById('editProfileModal').classList.remove('hidden');
+            Swal.fire({ title: 'กำลังอัปเดตข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            const payload = {
+                action: 'updateUserProfile',
+                userId: currentLineProfile.userId,
+                firstName: profName,
+                lastName: profSurname,
+                phone: profPhone,
+                password: '', // ไม่เปลี่ยนรหัสผ่านที่นี่
+                pictureUrl: profUrl
+            };
+
+            fetchAPI(payload)
+                .then(res => {
+                    if (res.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'อัปเดตข้อมูลสำเร็จ',
+                            text: 'ระบบกำลังแสดงข้อมูลล่าสุด',
+                            timer: 1500,
+                            showConfirmButton: false
+                        }).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        Swal.fire('เกิดข้อผิดพลาด', res.message, 'error');
+                    }
+                })
+                .catch(err => {
+                    console.error(err);
+                    Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
+                });
         }
 
-        function closeEditProfileModal() {
-            document.getElementById('editProfileModal').classList.add('hidden');
+        function openChangePasswordModal() {
+            document.getElementById('oldPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('changePasswordModal').classList.remove('hidden');
         }
 
-        function toggleProfPassword() {
-            const pwdInput = document.getElementById('profPassword');
-            const toggleBtn = document.getElementById('toggleProfPasswordBtn');
+        document.addEventListener('keydown', function(event) {
+            if (event.key === "Escape") {
+                closeChangePasswordModal();
+            }
+        });
+
+        function closeChangePasswordModal() {
+            document.getElementById('changePasswordModal').classList.add('hidden');
+        }
+
+        function togglePassField(fieldId, btnId) {
+            const pwdInput = document.getElementById(fieldId);
+            const toggleBtn = document.getElementById(btnId);
             if (pwdInput.type === 'password') {
                 pwdInput.type = 'text';
                 toggleBtn.classList.remove('fa-eye');
@@ -1938,37 +1940,43 @@
             }
         }
 
-        function submitEditProfile(e) {
-            e.preventDefault();
-            const profName = document.getElementById('profName').value;
-            const profSurname = document.getElementById('profSurname').value;
-            const profPhone = document.getElementById('profPhone').value;
-            const profPassword = document.getElementById('profPassword').value;
-            const profUrl = document.getElementById('profUrl').value;
+        function submitChangePassword(e) {
+            if (e) e.preventDefault();
+            const oldPassword = document.getElementById('oldPassword').value;
+            const newPassword = document.getElementById('newPassword').value;
 
-            Swal.fire({ title: 'กำลังอัปเดตข้อมูล...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            // ตรวจสอบรหัสผ่านเก่าตรงกับที่โหลดมา
+            if (oldPassword !== currentUserPassword) {
+                return Swal.fire('เกิดข้อผิดพลาด', 'รหัสผ่านเดิมไม่ถูกต้อง', 'error');
+            }
+
+            if (newPassword.length < 4) {
+                return Swal.fire('แจ้งเตือน', 'กรุณาตั้งรหัสผ่านใหม่อย่างน้อย 4 ตัวอักษร', 'warning');
+            }
+
+            Swal.fire({ title: 'กำลังบันทึกรหัสผ่านใหม่...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
             const payload = {
                 action: 'updateUserProfile',
                 userId: currentLineProfile.userId,
-                firstName: profName,
-                lastName: profSurname,
-                phone: profPhone,
-                password: profPassword,
-                pictureUrl: profUrl
+                firstName: document.getElementById('prof_fname').value,
+                lastName: document.getElementById('prof_lname').value,
+                phone: document.getElementById('prof_phone').value,
+                password: newPassword, // อัปเดตรหัสผ่านใหม่
+                pictureUrl: currentLineProfile ? currentLineProfile.pictureUrl : ''
             };
 
             fetchAPI(payload)
                 .then(res => {
                     if (res.success) {
+                        currentUserPassword = newPassword; // อัปเดตสเตตัสในเครื่อง
+                        closeChangePasswordModal();
                         Swal.fire({
                             icon: 'success',
-                            title: 'อัปเดตสำเร็จ',
-                            text: 'ระบบกำลังโหลดหน้าใหม่เพื่อแสดงข้อมูลล่าสุด',
+                            title: 'เปลี่ยนรหัสผ่านสำเร็จ',
+                            text: 'รหัสผ่านใหม่ของคุณได้รับการบันทึกแล้ว',
                             timer: 1500,
                             showConfirmButton: false
-                        }).then(() => {
-                            window.location.reload();
                         });
                     } else {
                         Swal.fire('เกิดข้อผิดพลาด', res.message, 'error');
