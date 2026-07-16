@@ -515,6 +515,10 @@
                     class="flex items-center justify-center gap-2 lg:gap-3 px-4 lg:px-5 py-2.5 lg:py-3.5 rounded-full text-xs lg:text-sm font-bold text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all">
                     <i class="fa-solid fa-shapes w-4 lg:w-5"></i> จัดการระบบ
                 </button>
+                <button onclick="switchAdminTab('depts')" id="adminTabDepts"
+                    class="flex items-center justify-center gap-2 lg:gap-3 px-4 lg:px-5 py-2.5 lg:py-3.5 rounded-full text-xs lg:text-sm font-bold text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all">
+                    <i class="fa-solid fa-building w-4 lg:w-5"></i> จัดการสิทธิ์แผนก
+                </button>
             </nav>
             <div class="p-2 lg:p-5 border-l lg:border-l-0 lg:border-t border-slate-100">
                 <button onclick="backToDashboard()"
@@ -584,6 +588,30 @@
                 <div id="adminAppsContainer" class="hidden w-full">
                     <div id="adminAppsList" class="w-full">
                         <!-- Apps Bubbles will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Tab Content: Depts -->
+                <div id="adminDeptsContainer" class="hidden w-full">
+                    <div class="bg-white rounded-3xl p-6 shadow-sm border border-slate-100 max-w-2xl mx-auto">
+                        <label class="block text-sm font-bold text-slate-700 mb-2">เลือกแผนก</label>
+                        <select id="deptSelect" onchange="loadDeptPermissions()" class="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-sky-500 mb-6 font-medium text-slate-700">
+                            <option value="">-- กรุณาเลือกแผนก --</option>
+                            <option value="ฝ่ายสารสนเทศ">ฝ่ายสารสนเทศ</option>
+                            <option value="ผู้จัดการ">ผู้จัดการ</option>
+                            <option value="ผู้ช่วยผู้จัดการ">ผู้ช่วยผู้จัดการ</option>
+                            <option value="ฝ่ายอำนวยการ">ฝ่ายอำนวยการ</option>
+                            <option value="ฝ่ายบัญชี">ฝ่ายบัญชี</option>
+                            <option value="ฝ่ายการเงิน">ฝ่ายการเงิน</option>
+                            <option value="ฝ่ายสินเชื่อ">ฝ่ายสินเชื่อ</option>
+                            <option value="ฝ่ายสมาชิกสัมพันธ์">ฝ่ายสมาชิกสัมพันธ์</option>
+                        </select>
+                        <div id="deptAppsCheckboxes" class="space-y-3 mb-6 max-h-[50vh] overflow-y-auto custom-scrollbar pr-2">
+                            <!-- Apps checkboxes will be generated here -->
+                        </div>
+                        <button onclick="saveDeptPermissions()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg shadow-sky-200 transition-all active:scale-[0.98] flex items-center justify-center gap-2">
+                            <i class="fa-solid fa-save"></i> บันทึกสิทธิ์แผนก
+                        </button>
                     </div>
                 </div>
 
@@ -1293,6 +1321,7 @@
         // Admin JS Logic
         // ==========================================
         let allUsersData = [];
+        let allDeptsData = {};
         let currentEditUserId = null;
         let adminViewMode = 'grid';
 
@@ -1315,18 +1344,21 @@
             // Show view toggles only for users tab
             document.getElementById('adminViewToggleWrapper').classList.remove('hidden');
 
-            document.getElementById('adminListContainer').innerHTML = '<div class="text-center text-slate-400 py-10"><i class="fa-solid fa-spinner fa-spin text-2xl mb-3"></i><p class="text-sm">กำลังโหลดข้อมูลพนักงาน...</p></div>';
+            document.getElementById('adminListContainer').innerHTML = '<div class="text-center text-slate-400 py-10"><i class="fa-solid fa-spinner fa-spin text-2xl mb-3"></i><p class="text-sm">กำลังโหลดข้อมูล...</p></div>';
 
-            fetchAPI({ action: 'getAllUsers', callerId: currentLineProfile.userId })
-                .then(res => {
-                    if (res.success) {
-                        allUsersData = res.data;
-                        renderAdminList(allUsersData);
-                    } else {
-                        Swal.fire('ข้อผิดพลาด', res.message, 'error');
-                        backToDashboard();
-                    }
-                })
+            Promise.all([
+                fetchAPI({ action: 'getAllUsers', callerId: currentLineProfile.userId }),
+                fetchAPI({ action: 'getAllDeptApps', callerId: currentLineProfile.userId })
+            ]).then(([resUsers, resDepts]) => {
+                if (resUsers.success && resDepts.success) {
+                    allUsersData = resUsers.data;
+                    allDeptsData = resDepts.data;
+                    renderAdminList(allUsersData);
+                } else {
+                    Swal.fire('ข้อผิดพลาด', resUsers.message || resDepts.message, 'error');
+                    backToDashboard();
+                }
+            })
                 .catch(err => {
                     console.error(err);
                     Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
@@ -1444,24 +1476,42 @@
             document.getElementById('editUserName').innerText = user.name + ' ' + user.surname;
             document.getElementById('editUserDept').innerText = user.department || '-';
 
-            // Reset checkboxes
-            document.querySelectorAll('.app-perm-checkbox').forEach(chk => {
-                chk.checked = false;
-                chk.disabled = false;
+            const deptAppsStr = allDeptsData[user.department] || '';
+            const deptApps = deptAppsStr.toLowerCase().split(',').map(s => s.trim());
+            const deptHasAll = deptApps.includes('all');
+
+            const individualApps = user.allowedApps ? user.allowedApps.toLowerCase().split(',').map(s => s.trim()) : [];
+            const userHasAll = individualApps.includes('all');
+
+            let html = `
+            <label class="flex items-center p-3 rounded-xl border border-slate-100 ${deptHasAll ? 'bg-slate-100 opacity-60' : 'bg-slate-50 hover:bg-slate-100'} cursor-pointer transition-colors group">
+                <input type="checkbox" id="chk_app_all" value="all" onchange="toggleAllApps(this)" ${(deptHasAll || userHasAll) ? 'checked' : ''} ${deptHasAll ? 'disabled' : ''} class="app-perm-checkbox w-5 h-5 text-sky-500 rounded focus:ring-sky-500 border-slate-300">
+                <div class="ml-3 flex items-center justify-between w-full">
+                    <span class="block text-sm font-bold text-slate-700">อนุญาตทุกแอป (ทั้งหมด)</span>
+                    ${deptHasAll ? '<span class="text-xs bg-sky-100 text-sky-600 px-2 py-1 rounded-md font-bold">สิทธิ์แผนก</span>' : ''}
+                </div>
+            </label>`;
+
+            globalAppsList.forEach(app => {
+                let isDeptApp = deptHasAll || deptApps.includes(app.id.toLowerCase());
+                let isUserApp = userHasAll || individualApps.includes(app.id.toLowerCase());
+                let checked = isDeptApp || isUserApp;
+                let disabled = isDeptApp || userHasAll; 
+                
+                html += `
+                <label class="flex items-center p-3 rounded-xl border border-slate-100 ${isDeptApp ? 'bg-slate-50 opacity-70' : 'bg-white hover:bg-slate-50'} cursor-pointer transition-colors group">
+                    <input type="checkbox" id="chk_app_${app.id}" value="${app.id}" ${checked ? 'checked' : ''} ${disabled ? 'disabled' : ''} data-is-dept="${isDeptApp}" class="app-perm-checkbox w-5 h-5 text-sky-500 rounded focus:ring-sky-500 border-slate-300">
+                    <div class="ml-3 flex items-center justify-between w-full">
+                        <div class="flex items-center gap-2">
+                            <span class="text-xl">${app.icon}</span>
+                            <span class="block text-sm font-bold text-slate-700">${app.name}</span>
+                        </div>
+                        ${isDeptApp ? '<span class="text-xs bg-sky-100 text-sky-600 px-2 py-1 rounded-md font-bold">สิทธิ์แผนก</span>' : ''}
+                    </div>
+                </label>`;
             });
 
-            let apps = user.allowedApps ? user.allowedApps.toLowerCase().split(',').map(s => s.trim()) : ['calendar'];
-
-            if (apps.includes('all')) {
-                document.getElementById('chk_app_all').checked = true;
-                toggleAllApps(document.getElementById('chk_app_all'));
-            } else {
-                apps.forEach(app => {
-                    const chk = document.getElementById('chk_app_' + app);
-                    if (chk) chk.checked = true;
-                });
-            }
-
+            document.getElementById('editModalAppsList').innerHTML = html;
             document.getElementById('editModal').classList.remove('hidden');
         }
 
@@ -1474,8 +1524,11 @@
             const chks = document.querySelectorAll('.app-perm-checkbox');
             chks.forEach(chk => {
                 if (chk.id !== 'chk_app_all') {
-                    chk.checked = chkAll.checked;
-                    chk.disabled = chkAll.checked;
+                    let isDept = chk.getAttribute('data-is-dept') === 'true';
+                    if (!isDept) {
+                        chk.checked = chkAll.checked;
+                        chk.disabled = chkAll.checked;
+                    }
                 }
             });
         }
@@ -1484,19 +1537,17 @@
             if (!currentEditUserId) return;
 
             let selectedApps = [];
-            const isAll = document.getElementById('chk_app_all').checked;
-
-            if (isAll) {
+            const isAll = document.getElementById('chk_app_all');
+            
+            if (isAll && isAll.checked && !isAll.disabled) {
                 selectedApps.push('all');
             } else {
                 document.querySelectorAll('.app-perm-checkbox:checked').forEach(chk => {
-                    if (chk.id !== 'chk_app_all') {
+                    if (chk.id !== 'chk_app_all' && chk.getAttribute('data-is-dept') !== 'true') {
                         selectedApps.push(chk.value);
                     }
                 });
             }
-
-            if (selectedApps.length === 0) selectedApps.push('calendar');
 
             const appsString = selectedApps.join(', ');
 
@@ -1515,11 +1566,11 @@
                     Swal.fire({
                         icon: 'success', title: 'สำเร็จ', text: res.message, timer: 1500, showConfirmButton: false
                     }).then(() => {
-                        closeEditModal();
-                        renderAdminList(allUsersData);
-
                         if (currentEditUserId === currentLineProfile.userId) {
-                            applyAppPermissions(appsString);
+                            location.reload();
+                        } else {
+                            closeEditModal();
+                            renderAdminList(allUsersData);
                         }
                     });
                 } else {
@@ -1527,9 +1578,10 @@
                 }
             }).catch(err => {
                 console.error(err);
-                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถส่งข้อมูลได้', 'error');
+                Swal.fire('ข้อผิดพลาด', 'ไม่สามารถเชื่อมต่อเซิร์ฟเวอร์ได้', 'error');
             });
         }
+
         function toggleProfPassword() {
             const pwdInput = document.getElementById('prof_password');
             const eyeIcon = document.getElementById('prof_eye_icon');
@@ -1608,25 +1660,28 @@
         // Admin: Manage Apps / Categories
         // ==========================================
         function switchAdminTab(tab) {
+            document.getElementById('adminTabUsers').className = "w-full flex items-center gap-3 px-5 py-3.5 rounded-full text-sm font-bold text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all";
+            document.getElementById('adminTabApps').className = "w-full flex items-center gap-3 px-5 py-3.5 rounded-full text-sm font-bold text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all";
+            document.getElementById('adminTabDepts').className = "w-full flex items-center gap-3 px-5 py-3.5 rounded-full text-sm font-bold text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all";
+            
+            document.getElementById('adminListContainer').classList.add('hidden');
+            document.getElementById('adminAppsContainer').classList.add('hidden');
+            document.getElementById('adminDeptsContainer').classList.add('hidden');
+            document.getElementById('adminUserSearchWrapper').classList.add('hidden');
+            document.getElementById('adminManageCatBtn').classList.add('hidden');
+            document.getElementById('adminManageCatBtn').classList.remove('flex');
+            document.getElementById('adminManageAppBtn').classList.add('hidden');
+            document.getElementById('adminManageAppBtn').classList.remove('flex');
+
             if (tab === 'users') {
                 document.getElementById('adminTabUsers').className = "w-full flex items-center gap-3 px-5 py-3.5 rounded-full text-sm font-bold bg-sky-100 text-sky-600 shadow-sm transition-all";
-                document.getElementById('adminTabApps').className = "w-full flex items-center gap-3 px-5 py-3.5 rounded-full text-sm font-bold text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all";
                 document.getElementById('adminListContainer').classList.remove('hidden');
                 document.getElementById('adminUserSearchWrapper').classList.remove('hidden');
-                document.getElementById('adminAppsContainer').classList.add('hidden');
 
                 document.getElementById('adminSectionTitle').innerText = "จัดการผู้ใช้งาน";
                 document.getElementById('adminSectionDesc').innerText = "จัดการสิทธิ์และการเข้าถึงแอปพลิเคชัน";
-
-                document.getElementById('adminManageCatBtn').classList.add('hidden');
-                document.getElementById('adminManageCatBtn').classList.remove('flex');
-                document.getElementById('adminManageAppBtn').classList.add('hidden');
-                document.getElementById('adminManageAppBtn').classList.remove('flex');
-            } else {
+            } else if (tab === 'apps') {
                 document.getElementById('adminTabApps').className = "w-full flex items-center gap-3 px-5 py-3.5 rounded-full text-sm font-bold bg-sky-100 text-sky-600 shadow-sm transition-all";
-                document.getElementById('adminTabUsers').className = "w-full flex items-center gap-3 px-5 py-3.5 rounded-full text-sm font-bold text-slate-400 hover:bg-slate-50 hover:text-slate-600 transition-all";
-                document.getElementById('adminListContainer').classList.add('hidden');
-                document.getElementById('adminUserSearchWrapper').classList.add('hidden');
                 document.getElementById('adminAppsContainer').classList.remove('hidden');
 
                 document.getElementById('adminSectionTitle').innerText = "จัดการแอประบบ";
@@ -1637,7 +1692,97 @@
                 document.getElementById('adminManageAppBtn').classList.remove('hidden');
                 document.getElementById('adminManageAppBtn').classList.add('flex');
                 renderAdminAppsList();
+            } else if (tab === 'depts') {
+                document.getElementById('adminTabDepts').className = "w-full flex items-center gap-3 px-5 py-3.5 rounded-full text-sm font-bold bg-sky-100 text-sky-600 shadow-sm transition-all";
+                document.getElementById('adminDeptsContainer').classList.remove('hidden');
+
+                document.getElementById('adminSectionTitle').innerText = "จัดการสิทธิ์แผนก";
+                document.getElementById('adminSectionDesc').innerText = "กำหนดแอปพลิเคชันพื้นฐานสำหรับแต่ละแผนก";
             }
+        }
+
+        function loadDeptPermissions() {
+            const dept = document.getElementById('deptSelect').value;
+            const container = document.getElementById('deptAppsCheckboxes');
+            
+            if (!dept) {
+                container.innerHTML = '<p class="text-slate-400 text-sm text-center">กรุณาเลือกแผนกเพื่อดูและจัดการสิทธิ์</p>';
+                return;
+            }
+
+            let html = '';
+            let currentApps = allDeptsData[dept] ? allDeptsData[dept].toLowerCase().split(',').map(s=>s.trim()) : [];
+            let isAll = currentApps.includes('all');
+
+            html += `
+            <label class="flex items-center p-3 rounded-xl border border-slate-100 bg-slate-50 hover:bg-slate-100 cursor-pointer transition-colors group">
+                <input type="checkbox" id="chk_dept_all" value="all" onchange="toggleDeptAllApps(this)" ${isAll ? 'checked' : ''} class="w-5 h-5 text-sky-500 rounded focus:ring-sky-500 border-slate-300">
+                <div class="ml-3">
+                    <span class="block text-sm font-bold text-slate-700">อนุญาตทุกแอป (ทั้งหมด)</span>
+                </div>
+            </label>`;
+
+            globalAppsList.forEach(app => {
+                let checked = isAll || currentApps.includes(app.id.toLowerCase());
+                html += `
+                <label class="flex items-center p-3 rounded-xl border border-slate-100 bg-white hover:bg-slate-50 cursor-pointer transition-colors group">
+                    <input type="checkbox" id="chk_dept_${app.id}" value="${app.id}" ${checked ? 'checked' : ''} ${isAll ? 'disabled' : ''} class="dept-perm-checkbox w-5 h-5 text-sky-500 rounded focus:ring-sky-500 border-slate-300">
+                    <div class="ml-3 flex items-center gap-2">
+                        <span class="text-xl">${app.icon}</span>
+                        <span class="block text-sm font-bold text-slate-700">${app.name}</span>
+                    </div>
+                </label>`;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function toggleDeptAllApps(chkAll) {
+            const chks = document.querySelectorAll('.dept-perm-checkbox');
+            chks.forEach(chk => {
+                chk.checked = chkAll.checked;
+                chk.disabled = chkAll.checked;
+            });
+        }
+
+        function saveDeptPermissions() {
+            const dept = document.getElementById('deptSelect').value;
+            if (!dept) {
+                Swal.fire('แจ้งเตือน', 'กรุณาเลือกแผนก', 'warning');
+                return;
+            }
+
+            let selectedApps = [];
+            const isAll = document.getElementById('chk_dept_all').checked;
+
+            if (isAll) {
+                selectedApps.push('all');
+            } else {
+                document.querySelectorAll('.dept-perm-checkbox:checked').forEach(chk => {
+                    selectedApps.push(chk.value);
+                });
+            }
+
+            if (selectedApps.length === 0) selectedApps.push('calendar');
+            const appsString = selectedApps.join(', ');
+
+            Swal.fire({ title: 'กำลังบันทึก...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+            fetchAPI({
+                action: 'adminManageDeptApps',
+                callerId: currentLineProfile.userId,
+                department: dept,
+                apps: appsString
+            }).then(res => {
+                if (res.success) {
+                    allDeptsData[dept] = appsString; // Update local state
+                    Swal.fire({ icon: 'success', title: 'สำเร็จ', text: res.message, timer: 1500, showConfirmButton: false });
+                } else {
+                    Swal.fire('ข้อผิดพลาด', res.message, 'error');
+                }
+            }).catch(err => {
+                Swal.fire('ข้อผิดพลาด', err.toString(), 'error');
+            });
         }
 
         function renderAdminAppsList(apps = globalAppsList) {
