@@ -1,0 +1,10 @@
+# Ignore Apps Script backend files
+code.js
+appsscript.json
+.clasp.json
+
+# Ignore documentation & metadata
+Project-summary.md
+save-state.md
+.agents/
+*.log
